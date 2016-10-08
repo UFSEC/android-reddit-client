@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="5dp">
+
+    <TextView
+        android:id="@+id/tvUpvotes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:hint="1233"
+        android:layout_marginLeft="6dp"/>
+    <RelativeLayout
+        android:id="@+id/layout_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_toRightOf="@+id/tvUpvotes"
+        android:layout_centerVertical="true"
+        android:gravity="center_vertical"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="6dp"
+        android:layout_toLeftOf="@+id/ivThumbnail">
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:textStyle="bold"
+            android:textSize="12sp"
+            android:hint="Here is the title of a post."/>
+        <TextView
+            android:id="@+id/tvDomain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/tvTitle"
+            android:layout_below="@+id/tvTitle"
+            android:textSize="12sp"
+            android:hint="(google.com)"/>
+
+        <TextView
+            android:id="@+id/tvComments"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/tvDomain"
+            android:layout_below="@+id/tvDomain"
+            android:textSize="12sp"
+            android:layout_marginTop="8dp"
+            android:hint="217 comments"/>
+
+        <TextView
+            android:id="@+id/tvSubreddit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/tvComments"
+            android:layout_toRightOf="@+id/tvComments"
+            android:textSize="12sp"
+            android:layout_marginLeft="12dp"
+            android:hint="AskReddit"/>
+
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/ivThumbnail"
+        android:layout_width="65dp"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:maxWidth="65dp"
+        android:scaleType="fitXY"
+        android:adjustViewBounds="true"
+        android:layout_marginRight="2dp"
+        android:src="@drawable/reddit_alien"/>
+</RelativeLayout>

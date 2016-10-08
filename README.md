@@ -33,7 +33,7 @@ Click Next.
 
 Select "Empty Activity" and click Next.
 
-Keep the default values for this activity and click Finish.
+Name this activity `PostsActivity` and click Finish.
 
 ##What's in the new project:
 
@@ -42,7 +42,7 @@ TODO: Michael give a nice explanation of what all the files that were created ar
 ##Install Library Dependencies
 We will be using some additional libraries in our application:
 
-android-async-http-client for sending network requests
+android-async-http-client, and httpcore for sending network requests
 Picasso for displaying images
 
 Edit the app/build.gradle file to add these dependencies.
@@ -55,6 +55,7 @@ dependencies {
     // ...
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.loopj.android:android-async-http:1.4.6'
+    compile "org.apache.httpcomponents:httpcore:4.3.2"
 }
 ```
 
@@ -79,182 +80,427 @@ Note: It is important to ensure that permissions are defined before
 ```
 
 ##Downloading Assets
+We will be using a placeholder image for the post thumbnails.
+Download this image:
+`https://raw.githubusercontent.com/UFSEC/android-reddit-client/master/Resources/reddit_alien.png`
+
+Once you have this image downloaded, copy it into `res/drawable`. You can also drag and drop it using the `Project` pane in Android Studio.
 
 
+##Setup Basic Posts layout
 
+At this point, we should have all of the dependencies, permissions, and assets taken care of. Lets get started by creating a layout for our PostsActivity.
 
-Now we are going to create a **work experience** section for Albert. Copy and paste the same container code that you have for your **about** section, but discarding your "about" text, changing the `<h1>` and giving this div an `id="work"`. It should look like this:
-```html
-<div id="work" class="container">
-  <div class="page-header">
-    <h1>Work experience</h1>
-  </div>
-</div>
+Open `res/layout/activity/activity_posts.xml`. We will create a ListView that will hold our posts.
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".PostsActivity" >
+
+    <ListView
+        android:id="@+id/lvPosts"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true" >
+
+    </ListView>
+</RelativeLayout>
+
 ```
+You should see something that looks like this in the Preview pane:
+![screenshot](https://raw.githubusercontent.com/UFSEC/android-reddit-client/master/Resources/lvPostsPreview.png)
 
-Now, we're going to use a bootstrap [list group](http://getbootstrap.com/components/#list-group) to list our work experience. Copy & paste the code from the bootstrap's website (link above) right below your "pade-header" div to create a list of jobs.
 
-This section should look like this now:
-![screenshot](https://gyazo.com/8c18b6e6223ca57cef6a246f14a9b8a7.png)
+##Creating the API Client
+We will now create  Java class that will act as our Reddit API client. This class will send out network requests to retrieve posts. Create a new class called `RedditClient` with the following code:
 
-Lets change the text and add some jobs now. I'm going to have a total of 3 jobs. I am also gonna add some [http://getbootstrap.com/components/#badges](bootstrap badge's) to denote the time spent at each job.
+NOTE: To create a new class, Navigate to `app/java/your.package.name/` in the Package pane. Right click on the package name (not the test one) and select `New -> Java Class`.
 
-Finally, the code for this section looks like this:
+```Java
+public class RedditClient {
+    private final String API_BASE_URL = "http://www.reddit.com/";
+    private AsyncHttpClient client;
 
-```html
-    <div id="work" class="container">
-      <div class="page-header">
-        <h1>Work experience</h1>
-      </div>
-      <ul class="list-group">
-        <li class="list-group-item">Lead developer at UF Software Engineering Club<span class="badge">Present</span></li>
-        <li class="list-group-item">UF Bookstore<span class="badge">2 years</span></li>
-        <li class="list-group-item">McDonald's Crew Member<span class="badge">7 years</span></li>
-      </ul>
-    </div>
-```
+    public RedditClient() {
+        this.client = new AsyncHttpClient();
+    }
 
-####Projects
+    // If an empty string is given, we will get data from the front page
+    private String getApiUrl(String subreddit) {
+        String url = API_BASE_URL;
 
-Since Albert is a programmer, he definitely needs a **projects** section to showcase his work and impress technical recruiters who come across his site.
+        if(!subreddit.equals("")){
+          url += "r/" + subreddit;
+        }
 
-Again, copy and paste the same container code that you have for your **about** and **work experience** sections, but discarding the contents other than the `page-header`, changing the `<h1>` and giving this div an `id="projects"`. It should look like this:
-
-```html
-    <div id="projects" class="container">
-      <div class="page-header">
-        <h1>Projects</h1>
-      </div>
-    </div>
-```
-
-We are going to list out 3 projects that Albert has developed. I want to have all 3 projects in one row. Each having an image and a title + description below its respective image. On a desktop view it will look like this:
-
-![projects](https://gyazo.com/5904de1ff8b709f611d32eabf39f9921.png)
-
-On mobile, since there is normally not enough screen width to display all 3 projects side by side in a row. It would be desirable to collapse each project underneath the previous in one column. We can accomplish this easily with bootstrap's [grid layout](http://getbootstrap.com/css/#grid).
-
-Here is the code for this section implementing the grid layout and with all of the data for the projects:
-```html
-    <div id="projects" class="container">
-      <div class="page-header">
-        <h1>Projects</h1>
-      </div>
-      <!--Bootstrap grid layout-->
-      <div class="row">
-        <div class="col-md-4">
-          <img src="img/gatorway.webp" class="img-responsive">
-          <h3>
-            <a href="https://play.google.com/store/apps/details?id=com.guidebook.apps.GatorWay.android&hl=en" target="_blank">UF GatorWay App</a>
-            </h3>
-          <p>I developed the GatorWay app for both iOS and Android. "GatorWay is the official app of New Student and Family Programs in the Dean of Students Office at the University of Florida. GatorWay lets you download guides to various events including: Preview, Weeks of Welcome, and Family Weekend."</p>
-        </div>
-
-        <div class="col-md-4">
-          <img src="img/isis.jpg" height="280" width="280" class="img-responsive img-rounded">
-          <br/>
-          <h3>
-            <a href="https://www.isis.ufl.edu/" target="_blank">isis.ufl.edu website</a>
-          </h3>
-          <p> I developed the isis website for university of florida students. This site is the online hub for students. It allows students to register for classes, view grades, transcripts, and a whole bunch more.</p>
-        </div>
-
-        <div class="col-md-4">
-          <img src="img/transloc.webp" class="img-responsive">
-          <h3>
-            <a href="https://play.google.com/store/apps/details?id=com.transloc.android.rider&hl=en" target="_blank">TransLoc Rider App</a>
-          </h3>
-          <p> I developed the TransLoc Rider app for Android. It allows students to track the bus system in Gainesville so they are able to get to class in time! It provides real time bus locations and ETAs.
-          </p>
-        </div>
-      </div>
-    </div>
-```
-
-As you see I have three `<div class="col-md-4">`'s inside of a `<div class="row">`.  Each row has 12 columns. The `<div class="col-md-4">` creates a column of length 4 for "medium" sized devices (Desktops (≥992px). 4 x 3 = a total of 12 columns. For non-medium sized devices such as phones/tables, these `<div class="col-md-4">`'s get wrapped onto a new line. For more info, checkout [bootstrap's docs](http://getbootstrap.com/css/#grid).
-
-Too see how the **projects** section looks on a mobile device, open the chrome developer tools.
-
-`ctrl+shift+j` on Windows or `cmd+option+j` on Mac.
-
-Click on the little [phone icon](http://cdn.sixrevisions.com/500-03-smartphone-icon-highlighted.png) in the very top left hand corner of the developer tools window. This will bring up [device mode](https://developer.chrome.com/devtools/docs/device-mode). Where you can view your site on all different devices. Select an iPhone or something, then refresh the page to interact with your site.
-
-####Blinking cursor animation
-The site is practically done. But lets add a little "blinking cursor" animation. It's going to look like this:
-![cursor](https://gyazo.com/5bcfff2123a0d48bc1a93cb98714cedc.gif)
-
-First add the below `<span>` element right after the "Hello, World!" text in your `<h1>` tag (still inside this `<h1>` tag though).
-```html
-<span id="cursor">|</span>
-```
-Now, we are going to use some JavaScript (and [jQuery](https://en.wikipedia.org/wiki/JQuery)) to animate this "|" so it looks like its blinking. Open your `script.js` file and paste the following function right at the top of the file.
-
-```javascript
-function cursorAnimation() {
-	$('#cursor').animate({
-	    opacity: 0
-	}, 'fast', 'swing').animate({
-	    opacity: 1
-	}, 'fast', 'swing');
+        return url + ".json";
+    }
 }
 ```
-This function first selects any HTML element(s) with an id of `cursor` (aka our cursor!) Then calls [jQuery's .animate()](http://api.jquery.com/animate/) function on it. Which just sets the opacity to 0 (invisible) and then brings it back to 1.
 
-You don't really need to understand entirely whats going on here. Alot of software development is utilizing other people's code and resources to accomplish your goal. For example, I didn't write this from scratch. I got the idea from [here](http://codepen.io/stathisg/pen/Bkvhg).
+Next, lets define a method for making a request using our client.
 
-Now, paste the below code above your `cursorAnimation()` function in your `script.js` file.
+ ```Java
+ public class RottenTomatoesClient {
+     // ...
 
-```javascript
-$(document).ready(function() {
-    setInterval ('cursorAnimation()', 800);
-});
+     public void getPosts(JsonHttpResponseHandler handler) {
+         // Exercise: If you pass in the name of a subreddit to getApiUrl(), it will get posts from that subreddit. As an exercise, extend the functionality of this app to allow the user to choose a subreddit.
+         String url = getApiUrl("");
+         client.get(url, handler);
+     }
+
+     // ...
+ }
+ ```
+
+ ##Define the Data Model
+
+Lets take a look at what the data we will be getting from reddit will look like. You can actually take a look at the data by navigating to `http://www.reddit.com/.json` in your browser. I recommend quickly installing an extension to format json data in your browser nicely. If you are using chrome, JSONView is a great one.
+
+As you can see, there is an object at the root that has an attribute `data`. Within this, there is an attribute `children`. This is where we have our array of posts. Each post has an attribute `data`, which contains a ton of information about that post. For the purposes of this demo, the information we will be using is the title, domain, num_comments, subreddit, thumbnail, url, and score.
+
+We will need to define a model that that stores these attributes. Create a Java class called `RedditPost` with the relevant attributes discussed above:
+
+```Java
+public class RedditPost {
+  private String title;
+  private String domain;
+  private int numComments;
+  private String subreddit;
+  private String thumbnail;
+  private String url;
+  private int upvotes;
+
+  public String getTitle() {
+      return title;
+  }
+
+  public String getDomain() {
+      return domain;
+  }
+
+  public int getNumComments() {
+      return numComments;
+  }
+
+  public String getSubreddit() {
+      return subreddit;
+  }
+
+  public String getThumbnail() {
+      return thumbnail;
+  }
+
+  public String getUrl(){
+      return url;
+  }
+
+  public int getUpvotes(){
+    return upvotes;
+  }
+}
 ```
 
-This function calls [setInterval()](https://developer.mozilla.org/en-US/docs/Web/API/WindowTimers/setInterval), passing in our `cursorAnimation()` function and a value of 800ms. This essentially calls `cursorAnimation()` every 800ms, giving the cursor a blinking effect!
+Next, we will add a factory method for deserializing the JSON response:
 
-The `$( document ).ready()` is a jQuery function, which is kind of like a "main method". Basically, once the page is loaded and ready to be manipulated it executes whatever code is inside of it. More info [here](https://learn.jquery.com/using-jquery-core/document-ready/).
+```Java
+public class RedditPost {
+    // ...
 
-####Navbar
+    // Returns a RedditPost from the given JSON data.
+    public static RedditPost fromJson(JSONObject jsonObject){
+        RedditPost p = new RedditPost();
+        try{
+            p.title = jsonObject.getString("title");
+            p.domain = jsonObject.getString("domain");
+            p.numComments = jsonObject.getInt("num_comments");
+            p.subreddit = jsonObject.getString("subreddit");
+            p.url = jsonObject.getString("url");
+            p.upvotes = jsonObject.getInt("score");
 
-As you may have noticed, the links in the navigation bar are incorrect and not all of them work. Lets fix that real quick.
 
-If you go to the code for the navigation bar, (the large `<nav>` tag at the top of the `<body>`) you will find an unordered list which houses each button on the nav bar. The code should look like this right now:
-```html
-      <ul class="nav navbar-nav">
-        <li class="active"><a href="#">Home</a></li>
-        <li><a href="#about">About</a></li>
-        <li><a href="#contact">Contact</a></li>
-      </ul>
+            // Try to get the thumbnailUrl (not all posts have thumbnails)
+            try{
+                p.thumbnail = jsonObject.getString("thumbnail");
+            } catch (JSONException e){
+                // There is no thumbnail
+                p.thumbnail = "";
+            }
+        }catch(JSONException e){
+            e.printStackTrace();
+            return null;
+        }
+
+        return p;
+    }
+
+    // ...
+}
 ```
-If you take a closer look at the code, you will see that each `<li>` is just an `<a>` tag with a link and some text. For example `<a href="#about">` is telling that link element to link to **the** element in the page with an id of *about*. So there was a reason we gave each section an id! :sunglasses:
 
-Let's fix/change the second `<li>` to correspond to "work" or "work experience" and add one more `<li>` for  "projects".
+To make our life a little bit easier, lets add a method that will return an array of RedditPosts when given a JSON array.
 
-The code should now look like this:
+```Java
+public class RedditPost {
+  // ...
 
-```html
-    <div id="navbar" class="collapse navbar-collapse">
-      <ul class="nav navbar-nav">
-        <li class="active"><a href="#">Home</a></li>
-        <li><a href="#about">About</a></li>
-        <li><a href="#work">Work</a></li>
-        <li><a href="#projects">Projects</a></li>
-      </ul>
-    </div><!--/.nav-collapse -->
+  public static ArrayList<RedditPost> fromJson(JSONArray jsonArray){
+        ArrayList<RedditPost> posts = new ArrayList<RedditPost>(jsonArray.length());
+
+        // Convert each element in the json array to a json object, then to a Post
+        for(int i=0; i<jsonArray.length(); i++){
+            JSONObject postJson = null;
+            try{
+                postJson = jsonArray.getJSONObject(i).getJSONObject("data");
+            } catch(Exception e){
+                e.printStackTrace();
+                continue;
+            }
+
+            RedditPost post = RedditPost.fromJson(postJson);
+            if(post != null){
+                posts.add(post);
+            }
+        }
+
+        return posts;
+    }
+
+    /// ...
+}
 ```
 
-And the nav buttons should all work appropiately! :+1:
+##Construct an Array Adapter
+We are now at a point where we have the API Client (`RedditClient`), and the data Model (`RedditPost`). What we need to do now is construct an adapter so that we can translate a `RedditPost` into a particular view. Create a new class called `RedditPostAdapter` which extends `ArrayAdapter<RedditPost>`:
 
-####Notes
-Woo, we've built your first website! And it doesn't look half bad, eh? It also looks good on mobile! All of this with minimal effort. Thanks bootstrap.
+```Java
+public class RedditPostAdapter extends ArrayAdapter<RedditPost> {
+    public RedditPostAdapter(Context context, ArrayList<RedditPost> posts) {
+        super(context, 0, posts);
+    }
 
-Now, if you want to use this tutorial as a basis for your own personal website (which you probably should) you will probably want to:
-* add a *contact* section with links to your email, github, linkedin, etc
-* maybe host your resume on the website
-* customize it to your liking. We don't want everyone with an identical website :stuck_out_tongue_winking_eye:
-* Host it with [github pages](https://pages.github.com/)
--- GitHub offers free hosting for static websites and makes it really simple to get your site online. The link above has great step by step instructions.
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        // TODO: Complete the definition of the view for each movie
+        return null;
 
-[Here](https://github.com/HackathonHackers/personal-sites) is a list of a ton of students around the world's personal sites. This is so you can get inspiration for design and whatnot.
+```
 
-[Contact me](http://spuleri.com/) if you have any questions.
+As you can see, the `RedditPostAdapter` will need to return a view representing a particular `RedditPost`. We'll define that view by creating a layout file called `item_reddit_post.xml` with a `RelativeLayout` root layout:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="5dp">
+
+    <TextView
+        android:id="@+id/tvUpvotes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:hint="1233"
+        android:layout_marginLeft="6dp"/>
+    <RelativeLayout
+        android:id="@+id/layout_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_toRightOf="@+id/tvUpvotes"
+        android:layout_centerVertical="true"
+        android:gravity="center_vertical"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="6dp"
+        android:layout_toLeftOf="@+id/ivThumbnail">
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:textStyle="bold"
+            android:textSize="12sp"
+            android:hint="Here is the title of a post."/>
+        <TextView
+            android:id="@+id/tvDomain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/tvTitle"
+            android:layout_below="@+id/tvTitle"
+            android:textSize="12sp"
+            android:hint="(google.com)"/>
+
+        <TextView
+            android:id="@+id/tvComments"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/tvDomain"
+            android:layout_below="@+id/tvDomain"
+            android:textSize="12sp"
+            android:layout_marginTop="8dp"
+            android:hint="217 comments"/>
+
+        <TextView
+            android:id="@+id/tvSubreddit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/tvComments"
+            android:layout_toRightOf="@+id/tvComments"
+            android:textSize="12sp"
+            android:layout_marginLeft="12dp"
+            android:hint="AskReddit"/>
+
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/ivThumbnail"
+        android:layout_width="65dp"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:maxWidth="65dp"
+        android:scaleType="fitXY"
+        android:adjustViewBounds="true"
+        android:layout_marginRight="2dp"
+        android:src="@drawable/reddit_alien"/>
+</RelativeLayout>
+```
+
+Now we can fill in the `getView()` method to finish off the `RedditPostAdapter`:
+
+```Java
+public class RedditPostAdapter extends ArrayAdapter<RedditPost>{
+  // ...
+  @Override
+ public View getView(int position, View convertView, ViewGroup parent){
+     // Get the data item for this position
+     RedditPost post = getItem(position);
+
+     // Check if the existing view is being reused, otherwise infalte the view
+     if(convertView == null){
+         LayoutInflater inflater = LayoutInflater.from(getContext());
+         convertView = inflater.inflate(R.layout.item_reddit_post, parent, false);
+     }
+
+     // Lookup views within the layout
+     TextView tvUpvotes = (TextView) convertView.findViewById(R.id.tvUpvotes);
+     TextView tvTitle = (TextView) convertView.findViewById(R.id.tvTitle);
+     TextView tvDomain = (TextView) convertView.findViewById(R.id.tvDomain);
+     TextView tvComments = (TextView) convertView.findViewById(R.id.tvComments);
+     TextView tvSubreddit = (TextView) convertView.findViewById(R.id.tvSubreddit);
+     ImageView ivThumbnail = (ImageView) convertView.findViewById(R.id.ivThumbnail);
+
+
+     // Populate the data
+     tvUpvotes.setText("" + post.getUpvotes());
+     tvTitle.setText(post.getTitle());
+     tvDomain.setText("(" + post.getDomain() + ")");
+     tvComments.setText(post.getNumComments() + " comments");
+     tvSubreddit.setText(post.getSubreddit());
+
+     // Display the thumbnail if there is one
+     String thumbnailUrl = post.getThumbnail();
+     if(thumbnailUrl.length() < 1 || thumbnailUrl.equals("self")){
+         ivThumbnail.setImageResource(R.drawable.reddit_alien);
+     }else{
+         Picasso.with(getContext()).load(post.getThumbnail()).into(ivThumbnail);
+     }
+
+     return convertView;
+ }
+
+ // ...
+}
+```
+
+##Bringing it all together
+We now have all the necessary wiring. All we have to do now is plug it in. We need to make it so that the `PostsActivity` will send out the API call, deserialize the response into an array of `RedditPosts`, and then render those into its View using the `RedditPostAdapter`.
+
+Lets start by initializing the ArrayList, adapter, and the ListView:
+
+```Java
+public class PostsActivity extends AppCompatActivity {
+    private ListView lvPosts;
+    private RedditPostAdapter postsAdapter;
+    RedditClient client;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_posts);
+
+        lvPosts = (ListView) findViewById(R.id.lvPosts);
+        ArrayList<RedditPost> aPosts = new ArrayList<RedditPost>();
+        postsAdapter = new RedditPostAdapter(this, aPosts);
+        lvPosts.setAdapter(postsAdapter);
+        client = new RedditClient();
+        fetchPosts();
+    }
+}
+```
+
+Now lets create the `fetchPosts()` method, which will make the call to the API and populate our ListView.
+
+```Java
+public class PostsActivity extends AppCompatActivity {
+// ...
+  public void fetchPosts(){
+      client.getPosts(new JsonHttpResponseHandler(){
+
+          @Override
+          public void onSuccess(int statusCode,  org.apache.http.Header[] headers, JSONObject responseBody){
+              JSONArray items = null;
+              try{
+                  // Get the posts json array
+                  JSONObject data = responseBody.getJSONObject("data");
+                  items = data.getJSONArray("children");
+                  // Parse the json array into array of model objects
+                  ArrayList<RedditPost> posts = RedditPost.fromJson(items);
+                  // Load the model objects into the adapter
+                  for(RedditPost post: posts){
+                      postsAdapter.add(post);
+                  }
+                  postsAdapter.notifyDataSetChanged();
+
+              } catch(JSONException e){
+                  e.printStackTrace();
+              }
+          }
+      });
+  }
+  //...
+}
+
+```
+
+Now run the app. We should see the ListView populated with the first 20 posts on the frontpage of reddit!
+
+![screenshot](https://raw.githubusercontent.com/UFSEC/android-reddit-client/master/Resources/final_app.png)
+
+
+##Notes
+Woo, we've done with our first app! Well... kinda. This app doesn't really do much does it? That's kind of the point. My goal here is really to provide you with a starting point. You can only really learn so much by following along with a tutorial and just copy-pasting code snippets. I strongly encourage you to continue with this app and implement additional features on your own. Some obvious features that this app is lacking include:
+
+We haven't yet implemented the functionality of viewing a post (thats kind of important isn't it???). Look into setting up an `OnItemClickListener` for the Posts ListView. You can use this to execute code when a post is clicked (we are already storing the posts URL. Lets do something with that!)
+
+We are only loading the first 20 posts. We should be able to continue scrolling right? You can set up event listeners for scrolling, and make another call to the API when we are getting towards the bottom. Hint: The JSON data contains an `after` property. This has something to do with the current page we are requesting.
+
+Provide a way to view the comments.
+
+Provide a way to view different subreddits.
+
+If you are feeling ambitious, allow users to sign in with their reddit account. You can then implement upvoting, commenting, making posts, etc.
+
+There are so many things you can do with this, these are just some ideas. I hope you enjoyed this tutorial and continue learning and developing your skills!
+
+
+[Contact me](http://bmtreuherz.github.io/) if you have any questions.

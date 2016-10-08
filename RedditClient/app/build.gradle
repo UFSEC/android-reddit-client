@@ -32,4 +32,5 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.loopj.android:android-async-http:1.4.6'
+    compile "org.apache.httpcomponents:httpcore:4.3.2"
 }
