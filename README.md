@@ -18,8 +18,7 @@ You must have (preferably the latest version of ) Android Studio installed on yo
 
 Some basic knowledge of Java or other OO languages is recommended.
 
-## Tutorial
-####Create a new project:
+##Create a new project:
 Launch Android Studio and select "Start a new Android Studio Project".
 
 You can name your application whatever you like. For this tutorial, we will be using the name "RedditClient".
@@ -36,18 +35,54 @@ Select "Empty Activity" and click Next.
 
 Keep the default values for this activity and click Finish.
 
-####What's in the new project:
+##What's in the new project:
 
 TODO: Michael give a nice explanation of what all the files that were created are.
 
-####Install Library Dependencies
+##Install Library Dependencies
 We will be using some additional libraries in our application:
 
-android-async-http-client for sending
+android-async-http-client for sending network requests
+Picasso for displaying images
+
+Edit the app/build.gradle file to add these dependencies.
+
+```.gradle
+repositories {
+    jcenter()
+}
+dependencies {
+    // ...
+    compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.loopj.android:android-async-http:1.4.6'
+}
+```
+
+We will then need to sync with gradle via:
+
+Tools->Android->Sync Project with Gradle Files
+
+##Adding Necessary Permissions
+Some features of the Android device require explicit permission to be able to be used. Some examples are: Making a call, using the camera, using Bluetooth, using the internet, making the phone vibrate, etc.
+
+We need to be able to use the internet to get our data. Add the internet permissions to `AndroidManifest.xml` within the `manifest` node:
+
+```xml
+<uses-permission android:name="android.permission.INTERNET" />
+```
+
+Note: It is important to ensure that permissions are defined before
+```xml
+<application>
+//...
+</application>
+```
+
+##Downloading Assets
 
 
 
-####Work Experience
+
 Now we are going to create a **work experience** section for Albert. Copy and paste the same container code that you have for your **about** section, but discarding your "about" text, changing the `<h1>` and giving this div an `id="work"`. It should look like this:
 ```html
 <div id="work" class="container">
