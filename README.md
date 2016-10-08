@@ -112,7 +112,7 @@ Open `res/layout/activity/activity_posts.xml`. We will create a ListView that wi
 ```
 You should see something that looks like this in the Preview pane:
 
-![screenshot](https://raw.githubusercontent.com/UFSEC/android-reddit-client/master/Resources/lvPostsPreview.PNG =250px)
+![screenshot](https://raw.githubusercontent.com/UFSEC/android-reddit-client/master/Resources/lvPostsPreview.PNG =250x)
 
 
 ##Creating the API Client
@@ -145,7 +145,7 @@ public class RedditClient {
 Next, lets define a method for making a request using our client.
 
  ```Java
- public class RottenTomatoesClient {
+ public class RedditClient {
      // ...
 
      public void getPosts(JsonHttpResponseHandler handler) {
@@ -481,7 +481,7 @@ public class PostsActivity extends AppCompatActivity {
 
 Now run the app. We should see the ListView populated with posts from the frontpage of Reddit!
 
-![screenshot](https://raw.githubusercontent.com/UFSEC/android-reddit-client/master/Resources/final_app.PNG =250px)
+![screenshot](https://raw.githubusercontent.com/UFSEC/android-reddit-client/master/Resources/final_app.PNG =250x)
 
 
 ##Notes
@@ -501,3 +501,5 @@ There are so many things you can do with this, these are just some ideas. I hope
 
 
 [Contact me](http://bmtreuherz.github.io/) if you have any questions.
+
+NOTE: This tutorial was inspired by Roger Hu's Rotten Tomatoes tutorial: (https://guides.codepath.com/android/Rotten-Tomatoes-Networking-Tutorial).
