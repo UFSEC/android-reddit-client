@@ -1,13 +1,10 @@
 # android-reddit-client
 A tutorial that provides an introduction to Android basics. This tutorial will take you
-through the process of creating an application that displays posts from the front page of reddit.
+through the process of creating an application that displays posts from the front page of Reddit.
 
 ######See the live recording of the tutorial from the SEC@UF meeting on YouTube below:
-TODO: Put the correct link
 
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=PKu0G6vdkiA
-" target="_blank"><img src="http://img.youtube.com/vi/PKu0G6vdkiA/0.jpg"
-alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /></a>
+Recording coming soon...
 
 ## Intro to Android basics
 
@@ -42,10 +39,9 @@ TODO: Michael give a nice explanation of what all the files that were created ar
 ##Install Library Dependencies
 We will be using some additional libraries in our application:
 
-android-async-http-client, and httpcore for sending network requests
-Picasso for displaying images
+`android-async-http-client`, and `httpcore` for sending network requests, as well as `Picasso` for displaying images.
 
-Edit the app/build.gradle file to add these dependencies.
+Edit the `app/build.gradle` file to include these dependencies:
 
 ```.gradle
 repositories {
@@ -59,12 +55,12 @@ dependencies {
 }
 ```
 
-We will then need to sync with gradle via:
+We will then need to sync our project with Gradle via:
 
-Tools->Android->Sync Project with Gradle Files
+`Tools->Android->Sync Project with Gradle Files`
 
 ##Adding Necessary Permissions
-Some features of the Android device require explicit permission to be able to be used. Some examples are: Making a call, using the camera, using Bluetooth, using the internet, making the phone vibrate, etc.
+Some features of the Android device will require explicit permission to be able to be used. Some examples are: Making a call, using the camera, using Bluetooth, using the internet, making the phone vibrate, etc.
 
 We need to be able to use the internet to get our data. Add the internet permissions to `AndroidManifest.xml` within the `manifest` node:
 
@@ -87,9 +83,9 @@ Download this image:
 Once you have this image downloaded, copy it into `res/drawable`. You can also drag and drop it using the `Project` pane in Android Studio.
 
 
-##Setup Basic Posts layout
+##Setting Up a Basic Posts Layout
 
-At this point, we should have all of the dependencies, permissions, and assets taken care of. Lets get started by creating a layout for our PostsActivity.
+At this point, we should have all of the dependencies, permissions, and assets taken care of. Lets get started by creating a layout for our `PostsActivity`.
 
 Open `res/layout/activity/activity_posts.xml`. We will create a ListView that will hold our posts.
 
@@ -115,7 +111,8 @@ Open `res/layout/activity/activity_posts.xml`. We will create a ListView that wi
 
 ```
 You should see something that looks like this in the Preview pane:
-![screenshot](https://raw.githubusercontent.com/UFSEC/android-reddit-client/master/Resources/lvPostsPreview.png)
+
+![screenshot](https://raw.githubusercontent.com/UFSEC/android-reddit-client/master/Resources/lvPostsPreview.PNG)
 
 
 ##Creating the API Client
@@ -161,7 +158,7 @@ Next, lets define a method for making a request using our client.
  }
  ```
 
- ##Define the Data Model
+##Define the Data Model
 
 Lets take a look at what the data we will be getting from reddit will look like. You can actually take a look at the data by navigating to `http://www.reddit.com/.json` in your browser. I recommend quickly installing an extension to format json data in your browser nicely. If you are using chrome, JSONView is a great one.
 
@@ -482,23 +479,23 @@ public class PostsActivity extends AppCompatActivity {
 
 ```
 
-Now run the app. We should see the ListView populated with the first 20 posts on the frontpage of reddit!
+Now run the app. We should see the ListView populated with posts from the frontpage of Reddit!
 
-![screenshot](https://raw.githubusercontent.com/UFSEC/android-reddit-client/master/Resources/final_app.png)
+![screenshot](https://raw.githubusercontent.com/UFSEC/android-reddit-client/master/Resources/final_app.PNG)
 
 
 ##Notes
 Woo, we've done with our first app! Well... kinda. This app doesn't really do much does it? That's kind of the point. My goal here is really to provide you with a starting point. You can only really learn so much by following along with a tutorial and just copy-pasting code snippets. I strongly encourage you to continue with this app and implement additional features on your own. Some obvious features that this app is lacking include:
 
-We haven't yet implemented the functionality of viewing a post (thats kind of important isn't it???). Look into setting up an `OnItemClickListener` for the Posts ListView. You can use this to execute code when a post is clicked (we are already storing the posts URL. Lets do something with that!)
+* We haven't yet implemented the functionality of viewing a post (thats kind of important isn't it???). Look into setting up an `OnItemClickListener` for the Posts ListView. You can use this to execute code when a post is clicked (we are already storing the posts URL. Lets do something with that!)
 
-We are only loading the first 20 posts. We should be able to continue scrolling right? You can set up event listeners for scrolling, and make another call to the API when we are getting towards the bottom. Hint: The JSON data contains an `after` property. This has something to do with the current page we are requesting.
+* We are only loading the first 20 posts. We should be able to continue scrolling right? You can set up event listeners for scrolling, and make another call to the API when we are getting towards the bottom. Hint: The JSON data contains an `after` property. This has something to do with the current page we are requesting.
 
-Provide a way to view the comments.
+* Provide a way to view the comments.
 
-Provide a way to view different subreddits.
+* Provide a way to view different subreddits.
 
-If you are feeling ambitious, allow users to sign in with their reddit account. You can then implement upvoting, commenting, making posts, etc.
+* If you are feeling ambitious, allow users to sign in with their reddit account. You can then implement upvoting, commenting, making posts, etc.
 
 There are so many things you can do with this, these are just some ideas. I hope you enjoyed this tutorial and continue learning and developing your skills!
 
