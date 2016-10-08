@@ -1,5 +1,5 @@
-# android-reddit-client
-A tutorial that provides an introduction to Android basics. This tutorial will take you
+# Android Reddit Client
+This tutorial provides an introduction to Android basics. This take you
 through the process of creating an application that displays posts from the front page of Reddit.
 
 ######See the live recording of the tutorial from the SEC@UF meeting on YouTube below:
@@ -112,7 +112,7 @@ Open `res/layout/activity/activity_posts.xml`. We will create a ListView that wi
 ```
 You should see something that looks like this in the Preview pane:
 
-![screenshot](https://raw.githubusercontent.com/UFSEC/android-reddit-client/master/Resources/lvPostsPreview.PNG)
+![screenshot](https://raw.githubusercontent.com/UFSEC/android-reddit-client/master/Resources/lvPostsPreview.PNG =250px)
 
 
 ##Creating the API Client
@@ -481,7 +481,7 @@ public class PostsActivity extends AppCompatActivity {
 
 Now run the app. We should see the ListView populated with posts from the frontpage of Reddit!
 
-![screenshot](https://raw.githubusercontent.com/UFSEC/android-reddit-client/master/Resources/final_app.PNG)
+![screenshot](https://raw.githubusercontent.com/UFSEC/android-reddit-client/master/Resources/final_app.PNG =250px)
 
 
 ##Notes
