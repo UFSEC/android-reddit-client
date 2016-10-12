@@ -372,6 +372,11 @@ As you can see, the `RedditPostAdapter` will need to return a view representing 
 </RelativeLayout>
 ```
 
+If you look at the preview pane, it should look something like this:
+
+<img src="https://raw.githubusercontent.com/UFSEC/android-reddit-client/master/Resources/post_preview.PNG" width="350" />
+
+
 Now we can fill in the `getView()` method to finish off the `RedditPostAdapter`:
 
 ```Java
