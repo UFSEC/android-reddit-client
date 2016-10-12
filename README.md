@@ -35,16 +35,15 @@ Name this activity `PostsActivity` and click Finish.
 
 ##What's in the new project:
 
-1) MainActivity (app > java > com.example.myfirstapp > MainActivity.java)
+*  PostsActivity (app > java > package-name > PostsActivity.java)
         The main “view” for your application
-2) Activity_main.xml (app > res > layout > activity_main.xml)
+*  activity_posts.xml (app > res > layout > activity_posts.xml)
         The GUI builder for your layout
-3) Android Manifest (app > manifests > AndroidManifest.xml)
+*  Android Manifest (app > manifests > AndroidManifest.xml)
         Fundamental characteristics of application (Such as what API level you're targeting)
-4) Gradle Scripts (Gradle Scripts > build.gradle)
+*  Gradle Scripts (Gradle Scripts > build.gradle)
         Dependency management scripts
-5) strings.xml (app > res >  > values > strings.xml)
-        String resources (Where you store static strings that never change in your user interface)
+
 
 ##Install Library Dependencies
 We will be using some additional libraries in our application:
