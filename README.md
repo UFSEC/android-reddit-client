@@ -4,11 +4,12 @@ through the process of creating an application that displays posts from the fron
 
 ######See the live recording of the tutorial from the SEC@UF meeting on YouTube below:
 
-Recording coming soon...
+Android Tutorial Part 1: https://www.youtube.com/watch?v=BZ0Yta8vZ4Q&index=3&list=PLMu88EzhpKymE38qUbLLLtKeIyolc1yKi
+Android Tutorial Part 2: Coming soon...
 
 ## Intro to Android basics
 
-TODO: Michael put some of your stuff here if you want to.
+Link to Android Pt 1 Repo: Coming soon...
 
 ## Prerequisites
 You must have (preferably the latest version of ) Android Studio installed on your computer. You can download that here: https://developer.android.com/studio/index.html.
@@ -34,7 +35,16 @@ Name this activity `PostsActivity` and click Finish.
 
 ##What's in the new project:
 
-TODO: Michael give a nice explanation of what all the files that were created are.
+1) MainActivity (app > java > com.example.myfirstapp > MainActivity.java)
+        The main “view” for your application
+2) Activity_main.xml (app > res > layout > activity_main.xml)
+        The GUI builder for your layout
+3) Android Manifest (app > manifests > AndroidManifest.xml)
+        Fundamental characteristics of application (Such as what API level you're targeting)
+4) Gradle Scripts (Gradle Scripts > build.gradle)
+        Dependency management scripts
+5) strings.xml (app > res >  > values > strings.xml)
+        String resources (Where you store static strings that never change in your user interface)
 
 ##Install Library Dependencies
 We will be using some additional libraries in our application:
